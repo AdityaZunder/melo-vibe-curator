@@ -13,6 +13,162 @@ export const authenticateWithSpotify = (): Promise<boolean> => {
   });
 };
 
+export interface SpotifyPlaylist {
+  id: string;
+  name: string;
+}
+
+// Simulated function to get user's playlists from Spotify
+export const getUserPlaylists = async (): Promise<SpotifyPlaylist[]> => {
+  // In a real implementation, this would call the Spotify API
+  return new Promise((resolve) => {
+    // Simulate API call delay
+    setTimeout(() => {
+      // Mock playlists data
+      const mockPlaylists: SpotifyPlaylist[] = [
+        {
+          id: 'playlist1',
+          name: 'Workout Mix'
+        },
+        {
+          id: 'playlist2',
+          name: 'Chill Vibes'
+        },
+        {
+          id: 'playlist3',
+          name: 'Road Trip'
+        },
+        {
+          id: 'playlist4',
+          name: 'Study Session'
+        },
+        {
+          id: 'playlist5',
+          name: 'Party Anthems'
+        }
+      ];
+      
+      resolve(mockPlaylists);
+    }, 1500);
+  });
+};
+
+// Simulated function to get tracks from a specific playlist
+export const getPlaylistTracks = async (playlistId: string): Promise<Track[]> => {
+  // In a real implementation, this would call the Spotify API
+  return new Promise((resolve) => {
+    // Simulate API call delay
+    setTimeout(() => {
+      // Mock playlist tracks based on the playlist ID
+      const playlistTracks: Record<string, Track[]> = {
+        'playlist1': [ // Workout Mix
+          {
+            id: 'w1',
+            name: 'Eye of the Tiger',
+            artist: 'Survivor',
+            albumArt: 'https://i.scdn.co/image/ab67616d0000b273c1a0e2c6c42e1dd8ba599c0f'
+          },
+          {
+            id: 'w2',
+            name: 'Stronger',
+            artist: 'Kanye West',
+            albumArt: 'https://i.scdn.co/image/ab67616d0000b2731f6a2a40bb692936879db730'
+          },
+          {
+            id: 'w3',
+            name: 'Can\'t Hold Us',
+            artist: 'Macklemore & Ryan Lewis',
+            albumArt: 'https://i.scdn.co/image/ab67616d0000b273c04e9f2b1563e6f601a06cd1'
+          }
+        ],
+        'playlist2': [ // Chill Vibes
+          {
+            id: 'c1',
+            name: 'Sunflower',
+            artist: 'Post Malone, Swae Lee',
+            albumArt: 'https://i.scdn.co/image/ab67616d0000b273e2e352d89826aef6dbd5ff8f'
+          },
+          {
+            id: 'c2',
+            name: 'Sunday Morning',
+            artist: 'Maroon 5',
+            albumArt: 'https://i.scdn.co/image/ab67616d0000b273283e3b960d4faaffd36d1973'
+          },
+          {
+            id: 'c3',
+            name: 'Electric Feel',
+            artist: 'MGMT',
+            albumArt: 'https://i.scdn.co/image/ab67616d0000b273f8770906ff0f91663df3a05f'
+          }
+        ],
+        'playlist3': [ // Road Trip
+          {
+            id: 'r1',
+            name: 'Life Is a Highway',
+            artist: 'Rascal Flatts',
+            albumArt: 'https://i.scdn.co/image/ab67616d0000b273d7b2c8bfce6c3969e8838365'
+          },
+          {
+            id: 'r2',
+            name: 'Take Me Home, Country Roads',
+            artist: 'John Denver',
+            albumArt: 'https://i.scdn.co/image/ab67616d0000b2732b9b037b30a569411e8c8468'
+          },
+          {
+            id: 'r3',
+            name: 'Sweet Home Alabama',
+            artist: 'Lynyrd Skynyrd',
+            albumArt: 'https://i.scdn.co/image/ab67616d0000b273b6aa6447195c5872839080d7'
+          }
+        ],
+        'playlist4': [ // Study Session
+          {
+            id: 's1',
+            name: 'Experience',
+            artist: 'Ludovico Einaudi',
+            albumArt: 'https://i.scdn.co/image/ab67616d0000b2734e8ca8357cea69dd7ef091a5'
+          },
+          {
+            id: 's2',
+            name: 'Comptine d\'un autre été, l\'après-midi',
+            artist: 'Yann Tiersen',
+            albumArt: 'https://i.scdn.co/image/ab67616d0000b2730f571abe8900dad81b4f0c41'
+          },
+          {
+            id: 's3',
+            name: 'River Flows in You',
+            artist: 'Yiruma',
+            albumArt: 'https://i.scdn.co/image/ab67616d0000b273fd7f7ba237eafcfa4c07431a'
+          }
+        ],
+        'playlist5': [ // Party Anthems
+          {
+            id: 'p1',
+            name: 'Don\'t Stop the Music',
+            artist: 'Rihanna',
+            albumArt: 'https://i.scdn.co/image/ab67616d0000b2735e8f1cfc2eb3f4dc3c59e559'
+          },
+          {
+            id: 'p2',
+            name: 'Uptown Funk',
+            artist: 'Mark Ronson ft. Bruno Mars',
+            albumArt: 'https://i.scdn.co/image/ab67616d0000b2735af2926a035d9502bfa65f5a'
+          },
+          {
+            id: 'p3',
+            name: 'Yeah!',
+            artist: 'Usher ft. Lil Jon, Ludacris',
+            albumArt: 'https://i.scdn.co/image/ab67616d0000b27303c03c7eb0d431a4f78691d5'
+          }
+        ]
+      };
+      
+      // Return the tracks for the given playlist ID, or an empty array if not found
+      resolve(playlistTracks[playlistId] || []);
+    }, 2000);
+  });
+};
+
 // Simulated function to get user's top tracks from Spotify
 export const getUserTopTracks = async (): Promise<Track[]> => {
   // In a real implementation, this would call the Spotify API
@@ -91,7 +247,8 @@ export const getUserTopTracks = async (): Promise<Track[]> => {
 // Simulated function to generate a playlist based on mood and user preferences
 export const generatePlaylist = async (
   moodAnalysis: MoodAnalysisResult,
-  userTracks: Track[]
+  userTracks: Track[],
+  numberOfTracks: number = 20
 ): Promise<GeneratedTrack[]> => {
   // In a real implementation, this would use the Spotify recommendations API
   // based on the mood analysis and user's top tracks as seed data
@@ -240,13 +397,13 @@ export const generatePlaylist = async (
       // that would match the mood (in reality, this would use Spotify's recommendation system)
       const generatedTracks: GeneratedTrack[] = [
         ...baseTracks,
-        ...userTracks.slice(0, 4).map(track => ({
+        ...userTracks.slice(0, 3).map(track => ({
           id: `user-${track.id}`,
           name: track.name,
           artist: track.artist,
           albumArt: track.albumArt
         })),
-        // Add more tracks to reach 20
+        // Add more tracks to reach the desired number
         {
           id: 'g1',
           name: 'Sunflower',
@@ -321,8 +478,8 @@ export const generatePlaylist = async (
         }
       ];
       
-      // Take only the first 20 tracks
-      resolve(generatedTracks.slice(0, 20));
+      // Take only the requested number of tracks (defaulting to 20, but now adjustable)
+      resolve(generatedTracks.slice(0, numberOfTracks));
     }, 3000); // Simulate 3 second API call
   });
 };

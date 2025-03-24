@@ -30,9 +30,9 @@ const PlaylistGenerator: React.FC<PlaylistGeneratorProps> = ({
   return (
     <div className="w-full max-w-3xl mx-auto">
       <div className="text-center mb-6 animate-fade-up" style={{ animationDelay: '0.1s' }}>
-        <h2 className="text-2xl font-bold mb-2">Your Curated Playlist</h2>
+        <h2 className="text-2xl font-bold mb-2">Your Personalized Recommendations</h2>
         <p className="text-muted-foreground">
-          Based on your image vibe and music taste.
+          Based on your image vibe and music taste, here are 7 songs just for you.
         </p>
       </div>
       
@@ -40,9 +40,9 @@ const PlaylistGenerator: React.FC<PlaylistGeneratorProps> = ({
         <div className="glass-panel rounded-xl p-8 text-center animate-fade-up" style={{ animationDelay: '0.2s' }}>
           <div className="flex flex-col items-center">
             <Loader2 className="w-10 h-10 text-melo-purple animate-spin mb-4" />
-            <h3 className="text-lg font-semibold mb-1">Generating Your Perfect Playlist</h3>
+            <h3 className="text-lg font-semibold mb-1">Generating Your Perfect Matches</h3>
             <p className="text-muted-foreground max-w-md mx-auto">
-              Our AI is crafting a unique playlist that matches your image's vibe with your music preferences.
+              Our AI is crafting unique song recommendations that match your image's vibe with your music preferences.
             </p>
           </div>
         </div>
@@ -52,7 +52,7 @@ const PlaylistGenerator: React.FC<PlaylistGeneratorProps> = ({
             className="glass-panel rounded-xl p-6 animate-fade-up hover-scale"
             style={{ animationDelay: '0.2s' }}
           >
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4">
               {tracks.map((track, index) => (
                 <div 
                   key={track.id}
@@ -64,16 +64,19 @@ const PlaylistGenerator: React.FC<PlaylistGeneratorProps> = ({
                   style={{ animationDelay: `${0.05 * index}s` }}
                   onClick={() => setActiveTrack(track.id === activeTrack ? null : track.id)}
                 >
-                  <div className="flex-shrink-0">
+                  <div className="flex-shrink-0 relative">
+                    <div className="absolute -left-3 -top-1 w-6 h-6 rounded-full bg-melo-purple flex items-center justify-center text-white text-sm font-bold">
+                      {index + 1}
+                    </div>
                     <img 
                       src={track.albumArt} 
                       alt={track.name} 
-                      className="w-12 h-12 rounded-md object-cover shadow-md"
+                      className="w-16 h-16 rounded-md object-cover shadow-md"
                     />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <h4 className="font-medium truncate">{track.name}</h4>
-                    <p className="text-sm text-muted-foreground truncate">{track.artist}</p>
+                    <h4 className="font-medium text-lg">{track.name}</h4>
+                    <p className="text-muted-foreground">{track.artist}</p>
                   </div>
                 </div>
               ))}

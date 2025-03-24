@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import Header from '@/components/Header';
 import ImageUpload from '@/components/ImageUpload';
 import MoodAnalysis, { MoodAnalysisResult } from '@/components/MoodAnalysis';
-import SpotifyAuth from '@/components/SpotifyAuth';
+import SpotifyAuth, { SpotifySourceOptions } from '@/components/SpotifyAuth';
 import TopTracks, { Track } from '@/components/TopTracks';
 import PlaylistGenerator, { GeneratedTrack } from '@/components/PlaylistGenerator';
 import Footer from '@/components/Footer';
@@ -13,7 +13,10 @@ import {
   authenticateWithSpotify,
   getUserTopTracks,
   generatePlaylist,
-  createSpotifyPlaylist
+  createSpotifyPlaylist,
+  getUserPlaylists,
+  getPlaylistTracks,
+  SpotifyPlaylist
 } from '@/services/spotify';
 
 const Index: React.FC = () => {
@@ -26,6 +29,10 @@ const Index: React.FC = () => {
   const [isSpotifyLoggedIn, setIsSpotifyLoggedIn] = useState(false);
   const [isLoadingTracks, setIsLoadingTracks] = useState(false);
   const [topTracks, setTopTracks] = useState<Track[]>([]);
+  const [isLoadingPlaylists, setIsLoadingPlaylists] = useState(false);
+  const [playlists, setPlaylists] = useState<SpotifyPlaylist[]>([]);
+  const [selectedSource, setSelectedSource] = useState<SpotifySourceOptions | null>(null);
+  const [sourceSelected, setSourceSelected] = useState(false);
   
   // Playlist state
   const [isGeneratingPlaylist, setIsGeneratingPlaylist] = useState(false);
@@ -58,15 +65,39 @@ const Index: React.FC = () => {
         setIsSpotifyLoggedIn(true);
         toast.success("Connected to Spotify!");
         
-        // Get user's top tracks after login
-        setIsLoadingTracks(true);
-        const tracks = await getUserTopTracks();
-        setTopTracks(tracks);
-        setIsLoadingTracks(false);
+        // Load user's playlists
+        setIsLoadingPlaylists(true);
+        const userPlaylists = await getUserPlaylists();
+        setPlaylists(userPlaylists);
+        setIsLoadingPlaylists(false);
       }
     } catch (error) {
       console.error('Error authenticating with Spotify:', error);
       toast.error("Failed to connect to Spotify. Please try again.");
+    }
+  };
+  
+  // Handle source selection (top tracks or playlist)
+  const handleSourceSelect = async (options: SpotifySourceOptions) => {
+    setSelectedSource(options);
+    setIsLoadingTracks(true);
+    
+    try {
+      if (options.sourceType === 'top-tracks') {
+        const tracks = await getUserTopTracks();
+        setTopTracks(tracks);
+        toast.success("Loaded your top tracks!");
+      } else if (options.sourceType === 'playlist' && options.playlistId) {
+        const tracks = await getPlaylistTracks(options.playlistId);
+        setTopTracks(tracks);
+        toast.success("Loaded tracks from your playlist!");
+      }
+      setSourceSelected(true);
+    } catch (error) {
+      console.error('Error loading tracks:', error);
+      toast.error("Failed to load tracks. Please try again.");
+    } finally {
+      setIsLoadingTracks(false);
     }
   };
   
@@ -80,18 +111,18 @@ const Index: React.FC = () => {
     setIsGeneratingPlaylist(true);
     
     try {
-      // Generate tracks based on mood and user's top tracks
-      const tracks = await generatePlaylist(moodAnalysis, topTracks);
+      // Generate tracks based on mood and user's selected tracks (limited to 7)
+      const tracks = await generatePlaylist(moodAnalysis, topTracks, 7);
       setGeneratedTracks(tracks);
       
       // Create a Spotify playlist with the generated tracks
       const playlistLink = await createSpotifyPlaylist(tracks, moodAnalysis.mood);
       setPlaylistUrl(playlistLink);
       
-      toast.success("Your playlist is ready!");
+      toast.success("Your recommendations are ready!");
     } catch (error) {
       console.error('Error generating playlist:', error);
-      toast.error("Failed to generate playlist. Please try again.");
+      toast.error("Failed to generate recommendations. Please try again.");
     } finally {
       setIsGeneratingPlaylist(false);
     }
@@ -100,7 +131,8 @@ const Index: React.FC = () => {
   // Determine which steps to show based on current state
   const showMoodAnalysis = moodAnalysis !== null;
   const showSpotifyAuth = showMoodAnalysis && !isSpotifyLoggedIn;
-  const showTopTracks = isSpotifyLoggedIn && topTracks.length > 0;
+  const showSourceSelection = isSpotifyLoggedIn && !sourceSelected;
+  const showTopTracks = sourceSelected && topTracks.length > 0;
   const showPlaylistGenerator = showTopTracks && moodAnalysis !== null;
   
   return (
@@ -144,6 +176,9 @@ const Index: React.FC = () => {
               <SpotifyAuth 
                 onLogin={handleSpotifyLogin}
                 isLoggedIn={isSpotifyLoggedIn}
+                playlists={playlists}
+                isLoadingPlaylists={isLoadingPlaylists}
+                onSourceSelect={showSourceSelection ? handleSourceSelect : undefined}
               />
             </section>
           )}

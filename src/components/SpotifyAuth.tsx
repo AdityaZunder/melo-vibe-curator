@@ -1,15 +1,62 @@
 
 import React, { useState } from 'react';
-import { Music, LogIn } from 'lucide-react';
+import { Music, LogIn, ListMusic } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from '@/components/ui/select';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
+
+interface SpotifyPlaylist {
+  id: string;
+  name: string;
+}
+
+export interface SpotifySourceOptions {
+  sourceType: 'top-tracks' | 'playlist';
+  playlistId?: string;
+}
 
 interface SpotifyAuthProps {
   onLogin: () => void;
   isLoggedIn: boolean;
+  playlists?: SpotifyPlaylist[];
+  isLoadingPlaylists?: boolean;
+  onSourceSelect?: (options: SpotifySourceOptions) => void;
 }
 
-const SpotifyAuth: React.FC<SpotifyAuthProps> = ({ onLogin, isLoggedIn }) => {
+const SpotifyAuth: React.FC<SpotifyAuthProps> = ({ 
+  onLogin, 
+  isLoggedIn, 
+  playlists = [],
+  isLoadingPlaylists = false,
+  onSourceSelect
+}) => {
   const [isHovering, setIsHovering] = useState(false);
+  const [sourceType, setSourceType] = useState<'top-tracks' | 'playlist'>('top-tracks');
+  const [selectedPlaylistId, setSelectedPlaylistId] = useState<string>('');
+  
+  const handleSourceTypeChange = (value: 'top-tracks' | 'playlist') => {
+    setSourceType(value);
+  };
+  
+  const handlePlaylistChange = (value: string) => {
+    setSelectedPlaylistId(value);
+  };
+  
+  const handleContinue = () => {
+    if (onSourceSelect) {
+      onSourceSelect({
+        sourceType,
+        ...(sourceType === 'playlist' ? { playlistId: selectedPlaylistId } : {})
+      });
+    }
+  };
   
   return (
     <div className="w-full max-w-2xl mx-auto">
@@ -36,9 +83,81 @@ const SpotifyAuth: React.FC<SpotifyAuthProps> = ({ onLogin, isLoggedIn }) => {
               <h3 className="text-lg font-semibold mb-1 text-green-600">
                 Connected to Spotify
               </h3>
-              <p className="text-muted-foreground mb-4">
-                Your account is connected and ready to use.
+              <p className="text-muted-foreground mb-6">
+                Choose your music source for recommendations:
               </p>
+              
+              <div className="w-full max-w-md">
+                <RadioGroup 
+                  defaultValue="top-tracks" 
+                  className="grid grid-cols-1 gap-4 mb-6"
+                  onValueChange={(value) => handleSourceTypeChange(value as 'top-tracks' | 'playlist')}
+                >
+                  <div className="flex items-start space-x-3 space-y-0 border border-border p-4 rounded-lg transition-all hover:border-melo-purple/50 hover:bg-melo-purple/5">
+                    <RadioGroupItem value="top-tracks" id="top-tracks" className="mt-1" />
+                    <div className="flex-1">
+                      <Label htmlFor="top-tracks" className="font-medium flex items-center gap-2">
+                        <Music size={18} className="text-melo-purple" />
+                        Your Top 50 Recent Songs
+                      </Label>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Use your most played tracks for recommendations
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start space-x-3 space-y-0 border border-border p-4 rounded-lg transition-all hover:border-melo-purple/50 hover:bg-melo-purple/5">
+                    <RadioGroupItem value="playlist" id="playlist" className="mt-1" />
+                    <div className="flex-1">
+                      <Label htmlFor="playlist" className="font-medium flex items-center gap-2">
+                        <ListMusic size={18} className="text-melo-purple" />
+                        Select a Playlist
+                      </Label>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Choose from your Spotify playlists
+                      </p>
+                      
+                      {sourceType === 'playlist' && (
+                        <div className="mt-4">
+                          {isLoadingPlaylists ? (
+                            <div className="h-10 bg-melo-purple/10 animate-pulse rounded-md"></div>
+                          ) : (
+                            <Select 
+                              value={selectedPlaylistId}
+                              onValueChange={handlePlaylistChange}
+                              disabled={playlists.length === 0}
+                            >
+                              <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Select a playlist" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {playlists.map((playlist) => (
+                                  <SelectItem key={playlist.id} value={playlist.id}>
+                                    {playlist.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </RadioGroup>
+                
+                <button 
+                  onClick={handleContinue}
+                  disabled={sourceType === 'playlist' && !selectedPlaylistId}
+                  className={cn(
+                    "w-full py-3 px-4 rounded-lg flex items-center justify-center gap-2 font-medium transition-all",
+                    "bg-gradient-to-r from-melo-purple to-melo-blue text-white shadow-md hover:shadow-lg",
+                    (sourceType === 'playlist' && !selectedPlaylistId) ? "opacity-50 cursor-not-allowed" : ""
+                  )}
+                >
+                  <ListMusic size={18} />
+                  Continue
+                </button>
+              </div>
             </>
           ) : (
             <>

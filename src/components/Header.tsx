@@ -44,7 +44,7 @@ const Header: React.FC = () => {
           >
             About
           </a>
-          <button className="btn-gradient">
+          <button className="px-4 py-2 rounded-lg bg-gradient-to-r from-melo-purple to-melo-blue text-white font-medium shadow-md hover:shadow-lg transition-all">
             Get Started
           </button>
         </div>
