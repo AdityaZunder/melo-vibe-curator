@@ -22,11 +22,6 @@ const MoodAnalysis: React.FC<MoodAnalysisProps> = ({ result, isLoading }) => {
         <div className="h-6 bg-melo-purple/20 rounded-md w-1/3 mb-4"></div>
         <div className="h-4 bg-melo-purple/10 rounded-md w-full mb-3"></div>
         <div className="h-4 bg-melo-purple/10 rounded-md w-5/6 mb-6"></div>
-        <div className="flex flex-wrap gap-2 mb-4">
-          {[...Array(5)].map((_, i) => (
-            <div key={i} className="h-8 bg-melo-purple/15 rounded-full w-20"></div>
-          ))}
-        </div>
       </div>
     );
   }
@@ -45,23 +40,6 @@ const MoodAnalysis: React.FC<MoodAnalysisProps> = ({ result, isLoading }) => {
       <p className="text-muted-foreground mb-6">
         {result.description}
       </p>
-      
-      <div className="mb-6">
-        <div className="text-sm font-medium mb-2">Tags</div>
-        <div className="flex flex-wrap gap-2">
-          {result.tags.map((tag, index) => (
-            <span 
-              key={index}
-              className={cn(
-                "px-3 py-1 rounded-full text-xs font-medium",
-                "bg-melo-purple/10 text-melo-purple-dark",
-              )}
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
-      </div>
     </div>
   );
 };
