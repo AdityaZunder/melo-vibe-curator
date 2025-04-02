@@ -133,7 +133,8 @@ const Index: React.FC = () => {
   const showSourceSelection = isSpotifyLoggedIn && !sourceSelected;
   const showImageUpload = sourceSelected; // Show image upload after selecting source
   const showMoodAnalysis = moodAnalysis !== null;
-  const showTopTracks = sourceSelected && topTracks.length > 0;
+  // Only show top tracks after the mood analysis is complete
+  const showTopTracks = sourceSelected && topTracks.length > 0 && moodAnalysis !== null;
   const showPlaylistGenerator = showTopTracks && moodAnalysis !== null;
   
   return (
@@ -164,16 +165,6 @@ const Index: React.FC = () => {
             />
           </section>
           
-          {/* Top Tracks Section - Shows after source selection */}
-          {(showTopTracks || isLoadingTracks) && (
-            <section>
-              <TopTracks 
-                tracks={topTracks}
-                isLoading={isLoadingTracks}
-              />
-            </section>
-          )}
-          
           {/* Image Upload Section - Step 2 after Spotify connection */}
           {showImageUpload && (
             <section>
@@ -190,6 +181,16 @@ const Index: React.FC = () => {
               <MoodAnalysis 
                 result={moodAnalysis}
                 isLoading={isAnalyzing}
+              />
+            </section>
+          )}
+          
+          {/* Top Tracks Section - Only show after mood analysis */}
+          {(showTopTracks || (isLoadingTracks && moodAnalysis !== null)) && (
+            <section>
+              <TopTracks 
+                tracks={topTracks}
+                isLoading={isLoadingTracks}
               />
             </section>
           )}
