@@ -39,23 +39,6 @@ const Index: React.FC = () => {
   const [generatedTracks, setGeneratedTracks] = useState<GeneratedTrack[]>([]);
   const [playlistUrl, setPlaylistUrl] = useState<string | null>(null);
   
-  // Handle image upload and analysis
-  const handleImageSelected = async (file: File) => {
-    setSelectedImage(file);
-    setIsAnalyzing(true);
-    
-    try {
-      const analysis = await analyzeImage(file);
-      setMoodAnalysis(analysis);
-      toast.success("Image analysis complete!");
-    } catch (error) {
-      console.error('Error analyzing image:', error);
-      toast.error("Failed to analyze image. Please try again.");
-    } finally {
-      setIsAnalyzing(false);
-    }
-  };
-  
   // Handle Spotify login
   const handleSpotifyLogin = async () => {
     try {
@@ -101,6 +84,23 @@ const Index: React.FC = () => {
     }
   };
   
+  // Handle image upload and analysis
+  const handleImageSelected = async (file: File) => {
+    setSelectedImage(file);
+    setIsAnalyzing(true);
+    
+    try {
+      const analysis = await analyzeImage(file);
+      setMoodAnalysis(analysis);
+      toast.success("Image analysis complete!");
+    } catch (error) {
+      console.error('Error analyzing image:', error);
+      toast.error("Failed to analyze image. Please try again.");
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+  
   // Handle playlist generation
   const handleGeneratePlaylist = async () => {
     if (!moodAnalysis || !isSpotifyLoggedIn || topTracks.length === 0) {
@@ -129,61 +129,42 @@ const Index: React.FC = () => {
   };
   
   // Determine which steps to show based on current state
-  const showMoodAnalysis = moodAnalysis !== null;
-  const showSpotifyAuth = showMoodAnalysis && !isSpotifyLoggedIn;
+  const showSpotifyAuth = true; // Always show this first
   const showSourceSelection = isSpotifyLoggedIn && !sourceSelected;
+  const showImageUpload = sourceSelected; // Show image upload after selecting source
+  const showMoodAnalysis = moodAnalysis !== null;
   const showTopTracks = sourceSelected && topTracks.length > 0;
   const showPlaylistGenerator = showTopTracks && moodAnalysis !== null;
   
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col bg-theme-navy">
       <Header />
       
       <main className="flex-1 w-full max-w-7xl mx-auto px-4 py-8">
         <div className="text-center mb-12 animate-fade-up">
           <h1 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight">
             <span className="gradient-text">Match Your Mood</span> <br className="md:hidden" />
-            <span>with Music</span>
+            <span className="text-theme-gray">with Music</span>
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Upload an image and we'll analyze its vibe to create the perfect playlist,
-            personalized to match your music taste.
+            Connect your Spotify, choose an image, and we'll create the perfect playlist
+            to match the vibe.
           </p>
         </div>
         
         <div className="space-y-16">
-          {/* Image Upload Section */}
+          {/* Spotify Auth Section - Step 1 */}
           <section>
-            <ImageUpload 
-              onImageSelected={handleImageSelected}
-              isAnalyzing={isAnalyzing}
+            <SpotifyAuth 
+              onLogin={handleSpotifyLogin}
+              isLoggedIn={isSpotifyLoggedIn}
+              playlists={playlists}
+              isLoadingPlaylists={isLoadingPlaylists}
+              onSourceSelect={showSourceSelection ? handleSourceSelect : undefined}
             />
           </section>
           
-          {/* Mood Analysis Section */}
-          {(showMoodAnalysis || isAnalyzing) && (
-            <section>
-              <MoodAnalysis 
-                result={moodAnalysis}
-                isLoading={isAnalyzing}
-              />
-            </section>
-          )}
-          
-          {/* Spotify Auth Section */}
-          {(showSpotifyAuth || isSpotifyLoggedIn) && (
-            <section>
-              <SpotifyAuth 
-                onLogin={handleSpotifyLogin}
-                isLoggedIn={isSpotifyLoggedIn}
-                playlists={playlists}
-                isLoadingPlaylists={isLoadingPlaylists}
-                onSourceSelect={showSourceSelection ? handleSourceSelect : undefined}
-              />
-            </section>
-          )}
-          
-          {/* Top Tracks Section */}
+          {/* Top Tracks Section - Shows after source selection */}
           {(showTopTracks || isLoadingTracks) && (
             <section>
               <TopTracks 
@@ -193,7 +174,27 @@ const Index: React.FC = () => {
             </section>
           )}
           
-          {/* Playlist Generator Section */}
+          {/* Image Upload Section - Step 2 after Spotify connection */}
+          {showImageUpload && (
+            <section>
+              <ImageUpload 
+                onImageSelected={handleImageSelected}
+                isAnalyzing={isAnalyzing}
+              />
+            </section>
+          )}
+          
+          {/* Mood Analysis Section - After image upload */}
+          {(showMoodAnalysis || isAnalyzing) && (
+            <section>
+              <MoodAnalysis 
+                result={moodAnalysis}
+                isLoading={isAnalyzing}
+              />
+            </section>
+          )}
+          
+          {/* Playlist Generator Section - Final step */}
           {(showPlaylistGenerator || isGeneratingPlaylist) && (
             <section>
               <PlaylistGenerator 

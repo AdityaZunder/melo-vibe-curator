@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -63,28 +62,13 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				// Melo Match custom colors
-				melo: {
-					purple: {
-						DEFAULT: '#9b87f5',
-						dark: '#7E69AB',
-						light: '#D6BCFA',
-					},
-					blue: {
-						DEFAULT: '#0EA5E9',
-						dark: '#0284C7',
-						light: '#7DD3FC',
-					},
-					pink: {
-						DEFAULT: '#D946EF',
-						dark: '#C026D3',
-						light: '#F5D0FE',
-					},
-					background: {
-						DEFAULT: '#FCFCFF',
-						dark: '#F1F0FB',
-					},
-					glass: 'rgba(255, 255, 255, 0.6)',
+				// New color scheme
+				theme: {
+					navy: '#0A192F',
+					gray: '#EAEAEA',
+					violet: '#A68CFF',
+					charcoal: '#1C1C1E',
+					blue: '#D7E7F9',
 				}
 			},
 			borderRadius: {
