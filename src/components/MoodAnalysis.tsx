@@ -27,10 +27,6 @@ const MoodAnalysis: React.FC<MoodAnalysisProps> = ({ result, isLoading }) => {
             <div key={i} className="h-8 bg-melo-purple/15 rounded-full w-20"></div>
           ))}
         </div>
-        <div className="h-5 bg-melo-purple/10 rounded-md w-1/4 mb-3"></div>
-        <div className="w-full bg-melo-purple/5 rounded-full h-3">
-          <div className="bg-melo-purple/30 h-3 rounded-full w-1/2"></div>
-        </div>
       </div>
     );
   }
@@ -51,24 +47,6 @@ const MoodAnalysis: React.FC<MoodAnalysisProps> = ({ result, isLoading }) => {
       </p>
       
       <div className="mb-6">
-        <div className="text-sm font-medium mb-2">Dominant Colors</div>
-        <div className="flex flex-wrap gap-2">
-          {result.dominantColors.map((color, index) => (
-            <div 
-              key={index}
-              className="flex items-center gap-2 p-1 pl-2 pr-3 rounded-full bg-secondary"
-            >
-              <div 
-                className="w-4 h-4 rounded-full" 
-                style={{ backgroundColor: color }}
-              ></div>
-              <span className="text-xs font-medium">{color}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-      
-      <div className="mb-6">
         <div className="text-sm font-medium mb-2">Tags</div>
         <div className="flex flex-wrap gap-2">
           {result.tags.map((tag, index) => (
@@ -82,19 +60,6 @@ const MoodAnalysis: React.FC<MoodAnalysisProps> = ({ result, isLoading }) => {
               {tag}
             </span>
           ))}
-        </div>
-      </div>
-      
-      <div>
-        <div className="flex justify-between items-center mb-1">
-          <span className="text-sm font-medium">Intensity</span>
-          <span className="text-sm text-muted-foreground">{result.intensityScore}/10</span>
-        </div>
-        <div className="w-full bg-secondary rounded-full h-2">
-          <div 
-            className="bg-gradient-to-r from-melo-blue to-melo-purple h-2 rounded-full transition-all duration-1000 ease-out"
-            style={{ width: `${(result.intensityScore / 10) * 100}%` }}
-          ></div>
         </div>
       </div>
     </div>
